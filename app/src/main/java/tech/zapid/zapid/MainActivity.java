@@ -2,9 +2,12 @@ package tech.zapid.zapid;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+
+    private TextView textView;
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -16,9 +19,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Example of a call to a native method
-        TextView tv = (TextView) findViewById(R.id.sample_text);
-        tv.setText(stringFromJNI());
+    }
+
+    public void verify(View view) {
+
+        textView = findViewById(R.id.mainScreenText);
+        textView.setText("verify Called!");
+    }
+
+    public void addKeyWord(View view) {
+
+        textView = findViewById(R.id.mainScreenText);
+        textView.setText("addKeyWord Called!");
+    }
+
+    public void addKeyCode(View view) {
+        textView = findViewById(R.id.mainScreenText);
+        textView.setText("addKeyCode Called!");
     }
 
     /**
