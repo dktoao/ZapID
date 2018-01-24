@@ -1,0 +1,9 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.google.guava:guava:23.6-android'
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"

@@ -10,6 +10,8 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import tech.zapid.blockletter.BlockLetter;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView textView;
@@ -40,7 +42,10 @@ public class MainActivity extends AppCompatActivity {
             if (result.getContents() == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                String message;
+                BlockLetter bl = new BlockLetter(result.getContents());
+                message = bl.message;
+                Toast.makeText(this, "Scanned: " + message, Toast.LENGTH_LONG).show();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
