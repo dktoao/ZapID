@@ -4,8 +4,7 @@
 * **Every** version format must start with a 32bit version number encoded as a
 little-endian uint32.
 * blockletter_cipher is defined by blockletter.py 'encode' and 'decode' fucntions
-* base64_encode is the base using the following utf-8 representation of characters
-  * \[ 0-9 a-z A-Z &amp; * \]
+* base64_encode is the base defined by the java.util.Base64 encoder
 * 'message' is a utf-8 encoded string that should uniquely identify the asset.
 
 ## Version 0:
@@ -18,7 +17,7 @@ base64_encode(blockletter_cipher(message))
 
 delimeter: @
 
-base64_encode(sha256(message))
+base64_encode(md5(message))
 
 ### Notes 
 * Considered very minimal security because effectively the only security

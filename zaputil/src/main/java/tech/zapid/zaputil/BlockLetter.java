@@ -1,5 +1,6 @@
-package tech.zapid.blockletter;
+package tech.zapid.zaputil;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -75,14 +76,20 @@ public class BlockLetter {
         charMap.put('\n', 0x01ffffff);
     }
 
-    public BlockLetter(String m) {
+    public BlockLetter(String m) throws IllegalArgumentException {
+        Optional<String> optionalMessage;
+        optionalMessage = validMessage(m);
+        if (optionalMessage.isPresent()) {
+            message = optionalMessage.get();
+        } else {
+            throw new IllegalArgumentException("Illegal character for initialization");
+        }
         message = m.toUpperCase();
         code = encode(message);
         try {
             hash = getHash(message);
         } catch (NoSuchAlgorithmException err) {
-            byte[] nullHash = {0x0};
-            hash = nullHash;
+            hash = new byte[] {0x0};
         }
     }
 
@@ -113,5 +120,16 @@ public class BlockLetter {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(m.getBytes(StandardCharsets.US_ASCII));
         return md.digest();
+    }
+
+    private static Optional<String> validMessage(String m) {
+
+        m = m.toUpperCase();
+        for (int ii = 0; ii < m.length(); ii++) {
+            if (charMap.get(m.charAt(ii)) == null) {
+                return Optional.absent();
+            }
+        }
+        return Optional.of(m);
     }
 }

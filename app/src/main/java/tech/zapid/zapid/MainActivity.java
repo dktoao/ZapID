@@ -10,7 +10,7 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import tech.zapid.blockletter.BlockLetter;
+import tech.zapid.zaputil.BlockLetter;
 
 public class MainActivity extends AppCompatActivity {
 
