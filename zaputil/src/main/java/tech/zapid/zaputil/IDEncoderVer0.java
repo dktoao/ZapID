@@ -2,7 +2,6 @@ package tech.zapid.zaputil;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Base64;
 
 public class IDEncoderVer0 implements IDEncoder {
@@ -16,17 +15,11 @@ public class IDEncoderVer0 implements IDEncoder {
 
         // hide the message
         Base64.Encoder b64 = Base64.getEncoder();
+        m = m.toUpperCase();
         message = Util.byteToString(b64.encode(BlockLetter.encode(m)));
 
         // Calculate the checksum
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException err) {
-            throw new Error("Feature not supported");
-        }
-        md.update(Util.stringToByte(m));
-        checksum = Util.byteToString(md.digest());
+        checksum = md5(m);
         return Util.stringToByte(message + "@" + checksum);
     }
 
@@ -34,22 +27,37 @@ public class IDEncoderVer0 implements IDEncoder {
     public String validate(byte[] code) throws InvalidIDCodeException {
         
         String message;
-
+        String checksum;
         // Collect the message
         try {
             String codeStr = Util.byteToString(code);
             String[] parts = codeStr.split("@");
             Base64.Decoder b64 = Base64.getDecoder();
             message = BlockLetter.decode(b64.decode(Util.stringToByte(parts[0])));
+            checksum = parts[1];
         } catch (Exception err) {
             throw new InvalidIDCodeException();
         }
 
-        byte[] checkCode = encode(message);
-        if (Arrays.equals(code, checkCode)) {
+        String newChecksum = md5(message);
+        if (checksum.equals(newChecksum)) {
             return message;
         } else {
             throw new InvalidIDCodeException();
         }
+    }
+
+    private String md5(String m) {
+
+        // Calculate the checksum
+        MessageDigest md;
+        Base64.Encoder b64 = Base64.getEncoder();
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException err) {
+            throw new Error("Feature not supported");
+        }
+        md.update(Util.stringToByte(m));
+        return Util.byteToString(b64.encode(md.digest()));
     }
 }

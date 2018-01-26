@@ -1,13 +1,10 @@
 package tech.zapid.zaputil;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 
 // TODO: Error handling for messages with incorrect characters
 
@@ -18,7 +15,7 @@ public class BlockLetter {
     public byte[] code;
     public byte[] hash;
 
-    private static BiMap<Character, Integer> charMap = HashBiMap.create();
+    private static BiMap charMap = new BiMap();
 
     static {
         charMap.put('0', 0x00e9d72e);
@@ -77,14 +74,7 @@ public class BlockLetter {
     }
 
     public BlockLetter(String m) throws IllegalArgumentException {
-        Optional<String> optionalMessage;
-        optionalMessage = validMessage(m);
-        if (optionalMessage.isPresent()) {
-            message = optionalMessage.get();
-        } else {
-            throw new IllegalArgumentException("Illegal character for initialization");
-        }
-        message = m.toUpperCase();
+        message = validMessage(m);
         code = encode(message);
         try {
             hash = getHash(message);
@@ -93,12 +83,14 @@ public class BlockLetter {
         }
     }
 
-    public static byte[] encode(String m) {
+    public static byte[] encode(String m) throws IllegalArgumentException {
 
+        // Validate the message
+        m = validMessage(m);
         // Convert to byte
         ByteBuffer bBuff = ByteBuffer.allocate(m.length() * 4);
         for (int ii = 0; ii < m.length(); ii++)
-            bBuff.putInt(ii*4, charMap.get(m.charAt(ii)));
+            bBuff.putInt(ii*4, charMap.getF(m.charAt(ii)));
         // Convert to big-endian byte array and return
         return bBuff.array();
     }
@@ -109,7 +101,7 @@ public class BlockLetter {
         ByteBuffer bBuff = ByteBuffer.wrap(bArr);
         char[] cArr = new char[bArr.length / 4];
         for (int ii = 0; ii < cArr.length; ii++)
-            cArr[ii] = charMap.inverse().get(bBuff.getInt(ii*4));
+            cArr[ii] = charMap.getR(bBuff.getInt(ii*4));
         // Convert to string and return
         return String.valueOf(cArr);
 
@@ -122,14 +114,14 @@ public class BlockLetter {
         return md.digest();
     }
 
-    private static Optional<String> validMessage(String m) {
+    private static String validMessage(String m) throws IllegalArgumentException {
 
         m = m.toUpperCase();
         for (int ii = 0; ii < m.length(); ii++) {
-            if (charMap.get(m.charAt(ii)) == null) {
-                return Optional.absent();
+            if (charMap.getF(m.charAt(ii)) == null)  {
+                throw new IllegalArgumentException("Illegal character for initialization");
             }
         }
-        return Optional.of(m);
+        return m;
     }
 }

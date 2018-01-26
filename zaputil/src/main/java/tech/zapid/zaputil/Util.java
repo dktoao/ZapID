@@ -34,7 +34,7 @@ public final class Util {
         // Strip off the version number and get the appropriate ID encoder
         ByteBuffer bBuf = ByteBuffer.allocate(4);
         bBuf.put(Arrays.copyOfRange(code, 0, 3));
-        int version = bBuf.getInt();
+        int version = bBuf.getInt(0);
 
         // Get the correct encoder and check the rest of the message
         byte[] testCode = Arrays.copyOfRange(code, 4, code.length);
@@ -47,7 +47,7 @@ public final class Util {
         return encoder.validate(testCode);
     }
 
-    static byte[] getQrCode(String message, int version) throws IndexOutOfBoundsException {
+    static byte[] getQRCode(String message, int version) throws IndexOutOfBoundsException {
 
         // Get the correct encoder and encode the message
         IDEncoder encoder = findEncoder(version);
@@ -56,7 +56,8 @@ public final class Util {
         // Allocate a new bit buffer and append the two parts of the code
         ByteBuffer bBuf = ByteBuffer.allocate(testCode.length + 4);
         bBuf.putInt(version);
-        bBuf.put(testCode, 4, testCode.length + 4);
+        for (int ii = 0; ii < testCode.length; ii++)
+            bBuf.put(ii+4, testCode[ii]);
         return bBuf.array();
     }
 }
