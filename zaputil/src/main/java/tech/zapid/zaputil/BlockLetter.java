@@ -4,9 +4,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Optional;
-
-// TODO: Error handling for messages with incorrect characters
 
 public class BlockLetter {
 

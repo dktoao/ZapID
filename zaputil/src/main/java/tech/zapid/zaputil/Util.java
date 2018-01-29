@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-public final class Util {
+final class Util {
 
     static private IDEncoder findEncoder(int version) throws IndexOutOfBoundsException {
         if (version < 0) {
@@ -21,15 +21,15 @@ public final class Util {
         }
     }
 
-    static public String byteToString(byte[] bArr) {
+    static String byteToString(byte[] bArr) {
         return new String(bArr, StandardCharsets.US_ASCII);
     }
 
-    static public byte[] stringToByte(String str) {
+    static byte[] stringToByte(String str) {
         return str.getBytes(StandardCharsets.US_ASCII);
     }
 
-    static String validateQRCode(byte[] code) throws InvalidIDCodeException {
+    public static String validateQRCode(byte[] code) throws InvalidIDCodeException {
 
         // Strip off the version number and get the appropriate ID encoder
         ByteBuffer bBuf = ByteBuffer.allocate(4);
@@ -47,7 +47,7 @@ public final class Util {
         return encoder.validate(testCode);
     }
 
-    static byte[] getQRCode(String message, int version) throws IndexOutOfBoundsException {
+    public static byte[] getQRCode(String message, int version) throws IndexOutOfBoundsException {
 
         // Get the correct encoder and encode the message
         IDEncoder encoder = findEncoder(version);
