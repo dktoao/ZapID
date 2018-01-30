@@ -72,7 +72,7 @@ public class ZapIDPassGenerator {
                                     + fields.get(1));
                         } else {
                             globalInfo += ("\n"
-                                    + fields.get(0).substring(1)
+                                    + fields.get(0)
                                     + ": "
                                     + fields.get(1));
                         }
@@ -102,34 +102,23 @@ public class ZapIDPassGenerator {
                             message += ("\n" + String.format(localInfo.get(key), fields.get(key)));
                         }
                     }
+                    message = BlockLetter.validMessage(message);
                     System.out.println(message);
-                    System.out.println(Util.byteToString(Util.getQRCode(message, version)));
+                    byte[] code = Util.getQRCode(message, version);
+                    String message2 = null;
+                    try {
+                        message2 = Util.validateQRCode(code);
+                    } catch (InvalidIDCodeException x) {
+                        System.out.println("Code is not valid (but it should be");
+                    }
+                    System.out.println(Util.byteToString(code));
+                    if (message.equals(message2)) {
+                        System.out.println("Great! The codes match!");
+                    } else {
+                        System.out.println("Crap! The codes do not match!");
+                    }
                     break;
             }
-
         }
     }
-
-        /* Old demo code
-        // Make a string and code it up
-        String message = "100 N Road B, Seattle WA\nLIC: XQL-053\nEXP: 12/12/20";
-        System.out.println("Message:\n" + message);
-        byte [] qrCode;
-        try {
-            qrCode = Util.getQRCode(message, 0);
-        } catch (Exception exc) {
-            System.out.println("Fail!");
-            return;
-        }
-        System.out.println("QR Code: " + Util.byteToString(qrCode));
-
-        // Make sure that we can decode and validate it
-        String newMessage;
-        try {
-            newMessage = Util.validateQRCode(qrCode);
-            System.out.println("Code Valid for:\n" + newMessage);
-        } catch (InvalidIDCodeException exc) {
-            System.out.println("Code is not valid! (but it should be)");
-        }
-        */
 }

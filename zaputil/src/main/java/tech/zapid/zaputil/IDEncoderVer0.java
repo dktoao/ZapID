@@ -16,7 +16,7 @@ public class IDEncoderVer0 implements IDEncoder {
         // hide the message
         Base64.Encoder b64 = Base64.getEncoder();
         m = m.toUpperCase();
-        message = Util.byteToString(b64.encode(BlockLetter.encode(m)));
+        message = Util.byteToString(b64.encode(Util.stringToByte(BlockLetter.validMessage(m))));
 
         // Calculate the checksum
         checksum = md5(m);
@@ -33,7 +33,7 @@ public class IDEncoderVer0 implements IDEncoder {
             String codeStr = Util.byteToString(code);
             String[] parts = codeStr.split("@");
             Base64.Decoder b64 = Base64.getDecoder();
-            message = BlockLetter.decode(b64.decode(Util.stringToByte(parts[0])));
+            message = Util.byteToString(b64.decode(Util.stringToByte(parts[0])));
             checksum = parts[1];
         } catch (Exception err) {
             throw new InvalidIDCodeException();

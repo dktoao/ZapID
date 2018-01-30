@@ -111,7 +111,7 @@ public class BlockLetter {
         return md.digest();
     }
 
-    private static String validMessage(String m) throws IllegalArgumentException {
+    public static String validMessage(String m) throws IllegalArgumentException {
 
         m = m.toUpperCase();
         for (int ii = 0; ii < m.length(); ii++) {
