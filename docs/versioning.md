@@ -1,8 +1,8 @@
 # Versioning Specifications for IDs
 
 ## Basic Info
-* **Every** version format must start with a 32bit version number encoded as a
-big-endian uint32.
+* **Every** version format must start with 4 byte string with a valid ASCII hexidecimal
+number which represents the version.
 * blockletter_cipher is defined by BlockLetter.java 'encode' and 'decode' fucntions
 * base64_encode is the base defined by the java.util.Base64 encoder
 * 'message' is a ASCII encoded string that should uniquely identify the asset.
@@ -11,7 +11,7 @@ big-endian uint32.
 Most basic version with minimal security, does not require keywords or keycodes.
 
 ### Format
-32bit version number
+hex version number
 
 base64_encode(message)
 

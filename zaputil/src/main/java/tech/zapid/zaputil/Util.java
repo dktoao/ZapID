@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-final class Util {
+final public class Util {
 
     static private IDEncoder findEncoder(int version) throws IndexOutOfBoundsException {
         if (version < 0) {
@@ -21,20 +21,19 @@ final class Util {
         }
     }
 
-    static String byteToString(byte[] bArr) {
+    public static String byteToString(byte[] bArr) {
         return new String(bArr, StandardCharsets.US_ASCII);
     }
 
-    static byte[] stringToByte(String str) {
+    public static byte[] stringToByte(String str) {
         return str.getBytes(StandardCharsets.US_ASCII);
     }
 
     public static String validateQRCode(byte[] code) throws InvalidIDCodeException {
 
         // Strip off the version number and get the appropriate ID encoder
-        ByteBuffer bBuf = ByteBuffer.allocate(4);
-        bBuf.put(Arrays.copyOfRange(code, 0, 3));
-        int version = bBuf.getInt(0);
+        byte[] versionBytes = Arrays.copyOfRange(code, 0, 3);
+        int version = Integer.parseInt(byteToString(versionBytes), 16);
 
         // Get the correct encoder and check the rest of the message
         byte[] testCode = Arrays.copyOfRange(code, 4, code.length);
@@ -51,11 +50,15 @@ final class Util {
 
         // Get the correct encoder and encode the message
         IDEncoder encoder = findEncoder(version);
+        String versionString = String.format("%04X", version);
+        byte[] versionBytes = stringToByte(versionString);
         byte[] testCode = encoder.encode(message);
 
         // Allocate a new bit buffer and append the two parts of the code
         ByteBuffer bBuf = ByteBuffer.allocate(testCode.length + 4);
-        bBuf.putInt(version);
+        for (int ii = 0; ii < 4; ii++) {
+            bBuf.put(ii, versionBytes[ii]);
+        }
         for (int ii = 0; ii < testCode.length; ii++)
             bBuf.put(ii+4, testCode[ii]);
         return bBuf.array();

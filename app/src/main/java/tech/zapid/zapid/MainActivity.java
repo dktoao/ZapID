@@ -11,10 +11,10 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import tech.zapid.zaputil.BlockLetter;
+import tech.zapid.zaputil.InvalidIDCodeException;
+import tech.zapid.zaputil.Util;
 
 public class MainActivity extends AppCompatActivity {
-
-    private TextView textView;
 
     // Used to load the 'native-lib' library on application startup.
     //static {
@@ -42,10 +42,14 @@ public class MainActivity extends AppCompatActivity {
             if (result.getContents() == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
-                String message;
-                BlockLetter bl = new BlockLetter(result.getContents());
-                message = bl.message;
-                Toast.makeText(this, "Scanned: " + message, Toast.LENGTH_LONG).show();
+                String message = "";
+                TextView tv = findViewById(R.id.verifyText);
+                try {
+                    message = Util.validateQRCode(Util.stringToByte(result.getContents()));
+                    tv.setText("Valid ID!\n" + message);
+                } catch (InvalidIDCodeException x) {
+                    tv.setText("Invalid ID!");
+                }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -54,13 +58,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void addKeyWord(View view) {
 
-        textView = findViewById(R.id.mainScreenText);
-        textView.setText("addKeyWord Called!");
+        Toast.makeText(this, "Function not available", Toast.LENGTH_LONG).show();
     }
 
     public void addKeyCode(View view) {
-        textView = findViewById(R.id.mainScreenText);
-        textView.setText("addKeyCode Called!");
+
+        Toast.makeText(this, "Function not available", Toast.LENGTH_LONG).show();
     }
 
     ///**
