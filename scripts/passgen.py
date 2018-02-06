@@ -8,7 +8,6 @@ Class containing function to setup and generate pass elements
 import hashlib
 import qrcode
 import numpy
-import collections
 
 from PIL import Image
 from typing import List
@@ -91,4 +90,3 @@ class PassGenerator:
             background.save(save_path)
         else:
             return background
-                
