@@ -4,22 +4,24 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import tech.zapid.zaputil.BlockLetter;
 import tech.zapid.zaputil.InvalidIDCodeException;
 import tech.zapid.zaputil.Util;
 
 public class MainActivity extends AppCompatActivity {
 
+
     // Used to load the 'native-lib' library on application startup.
     //static {
     //    System.loadLibrary("native-lib");
     //}
+
+    public static final String VALIDATION_MESSAGE = "VALIDATION_MESSAGE";
+    public static final String VALIDATION_RESULT = "VALIDATION_RESULT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +45,18 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
                 String message = "";
-                TextView tv = findViewById(R.id.verifyText);
+                boolean isValid;
                 try {
                     message = Util.validateQRCode(Util.stringToByte(result.getContents()));
-                    tv.setText("Valid ID!\n" + message);
+                    isValid = true;
                 } catch (InvalidIDCodeException x) {
-                    tv.setText("Invalid ID!");
+                    message = "";
+                    isValid = false;
                 }
+                Intent intent = new Intent(this, DisplayActivity.class);
+                intent.putExtra(VALIDATION_MESSAGE, message);
+                intent.putExtra(VALIDATION_RESULT, isValid);
+                startActivity(intent);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

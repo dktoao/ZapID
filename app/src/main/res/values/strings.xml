@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ZapID</string>
+    <string name="title_activity_validation">Validation</string>
 </resources>

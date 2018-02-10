@@ -33,8 +33,12 @@ final public class Util {
 
         // Strip off the version number and get the appropriate ID encoder
         byte[] versionBytes = Arrays.copyOfRange(code, 0, 3);
-        int version = Integer.parseInt(byteToString(versionBytes), 16);
-
+        int version = -1;
+        try {
+            version = Integer.parseInt(byteToString(versionBytes), 16);
+        } catch (Exception x) {
+            throw new InvalidIDCodeException();
+        }
         // Get the correct encoder and check the rest of the message
         byte[] testCode = Arrays.copyOfRange(code, 4, code.length);
         IDEncoder encoder;
