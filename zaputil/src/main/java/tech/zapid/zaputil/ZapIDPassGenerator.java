@@ -109,7 +109,7 @@ public class ZapIDPassGenerator {
                     try {
                         message2 = Util.validateQRCode(code);
                     } catch (InvalidIDCodeException x) {
-                        System.out.println("Code is not valid (but it should be");
+                        System.out.println("Code is not valid (but it should be)");
                     }
                     System.out.println(Util.byteToString(code));
                     if (message.equals(message2)) {

@@ -17,9 +17,9 @@ public class IDEncoderVer0 implements IDEncoder {
         Base64.Encoder b64 = Base64.getEncoder();
         m = m.toUpperCase();
         message = Util.byteToString(b64.encode(Util.stringToByte(BlockLetter.validMessage(m))));
-
+        String m_salt = m + "1boDIb11cezJ23gBn6b7";
         // Calculate the checksum
-        checksum = md5(m);
+        checksum = md5(m_salt);
         return Util.stringToByte(message + "@" + checksum);
     }
 
@@ -39,7 +39,7 @@ public class IDEncoderVer0 implements IDEncoder {
             throw new InvalidIDCodeException();
         }
 
-        String newChecksum = md5(message);
+        String newChecksum = md5(message + "1boDIb11cezJ23gBn6b7");
         if (checksum.equals(newChecksum)) {
             return message;
         } else {
