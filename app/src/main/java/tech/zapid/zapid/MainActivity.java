@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     public void verify(View view) {
 
         IntentIntegrator scanner = new IntentIntegrator(this);
+        scanner.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
         scanner.setBeepEnabled(false);
         scanner.initiateScan();
     }
