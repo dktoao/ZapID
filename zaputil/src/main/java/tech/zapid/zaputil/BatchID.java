@@ -171,6 +171,12 @@ public class BatchID {
                 throw new Error("Could not write to file");
             }
         }
+        try {
+            batch.close();
+        } catch (IOException x) {
+            x.printStackTrace();
+            throw new Error("Could not close the file");
+        }
     }
 
     public String getMessage(int index) {

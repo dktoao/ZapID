@@ -1,16 +1,6 @@
 package tech.zapid.zaputil;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class ZapIDPassGenerator {
-
-    private enum CsvFileSection {NA, GLOBAL, HEADER, INDIVIDUAL}
 
     public static void main(String[] args) {
 
@@ -33,5 +23,6 @@ public class ZapIDPassGenerator {
                 System.out.println("Code is invalid :(");
             }
         }
+        batch.writeSignedFile(outFile, version);
     }
 }
