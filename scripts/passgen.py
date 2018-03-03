@@ -14,7 +14,7 @@ import blockletter
 class PassGenerator:
     """Class that stores the layout variables for pass generation"""
 
-    def __init__(self, width: int=1000, height: int=400, qr_block: int=10,
+    def __init__(self, width: int=1000, height: int=600, qr_block: int=10,
                  txt_block: int=10, logo_block: int=5, border_block: int=5,
                  qr_pad: int=4):
 
@@ -28,7 +28,7 @@ class PassGenerator:
         self.qr_pad = qr_pad
 
         # Calculated parameters
-        width_pad = 5*self.border_block
+        width_pad = 6*self.border_block
         self.inner_width = self.width - width_pad
         height_pad = 6*self.border_block
         self.inner_height = self.height - height_pad
@@ -78,9 +78,17 @@ class PassGenerator:
         border_img = Image.new(
             '1', (self.width - 2*self.border_block,
                   self.height - 2*self.border_block),
+            color=0x000000
+        )
+        border_inner_img = Image.new(
+            '1', (self.width - 4*self.border_block,
+                  self.height - 4*self.border_block),
             color=0xFFFFFF
         )
         pass_img.paste(border_img, (self.border_block, self.border_block))
-        pass_img.paste(inner_img, (2*self.border_block, 2*self.border_block))
+        pass_img.paste(
+            border_inner_img, (2*self.border_block, 2*self.border_block)
+        )
+        pass_img.paste(inner_img, (3*self.border_block, 3*self.border_block))
 
         return pass_img

@@ -106,13 +106,10 @@ def break_phrase(phrase, char_width):
         if row > (char_width - 1) or char == '\n':
             if break_index == last_break:
                 break_index = last_break + char_width
-            if line == 0:
-                broken_phrase.append(phrase[last_break:break_index].strip())
-            else:
-                broken_phrase.append(phrase[last_break:break_index].strip())
+            broken_phrase.append(phrase[last_break:break_index].strip())
             last_break = break_index
             line += 1
-            row = 0
+            row = index - last_break + 1
             continue
         row += 1
     if last_break < len(phrase):
