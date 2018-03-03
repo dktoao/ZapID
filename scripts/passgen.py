@@ -2,91 +2,85 @@
 Class containing function to setup and generate pass elements
 """
 
-#TODO: Fix pass formatting a little
-
 # Library Imports
-import hashlib
 import qrcode
-import numpy
 
 from PIL import Image
-from typing import List
 
 # Package Imports
 import blockletter
 
 
-class PassGenerator:    
-    
-    def __init__(self, fields: List[str], version: int=0):
-        """PassGen class constructor"""
-        
-        self.fields = fields
-        self.version = version
-    
-    def make_display_str(self, values: List[str]):
-        """Make the hash string that is used to identify the pass"""
-        
-        assert(len(values) == len(self.fields))
-        disp_str = ""
-        for (fld, val) in zip(self.fields, values):
-            if fld[0] == '_':
-                if fld[1] == '_':
-                    pass
-                else:
-                    disp_str += '{}\n'.format(val.strip())
-            else:
-                disp_str += "{}: {}\n".format(fld.strip(), val.strip())
-                
-        return disp_str
-    
-    def generate_hash(self, values: List[str], keyword: str=''):
-        """Generate a sha256 hash of the display string, with an optional
-        keyword for security"""
-        disp_str = self.make_display_str(values)
-        disp_str += keyword
-        encoded_str = blockletter.encode(disp_str)
-        h = hashlib.sha256()
-        h.update(encoded_str)
-        return h.digest()
-        
-    def validate_hash(self, values: List[str], check_hash: bytes, \
-            keyword: str=""):
-        """Validate a hash hex digest against the given data"""
-        
-        gen_hash = self.generate_hash(values, keyword)
-        return (gen_hash == check_hash)
-        
-    def generate_qr(self, values: List[str], keyword: str='', \
-            block_size: int=10, save_path: str=''):
-        """Generate a QR code representing the hashed info of the pass and 
-        protocol version"""
-        
-        gen_hash = self.generate_hash(values, keyword)
-        qr_data = bytes(numpy.uint32([self.version])) + gen_hash
-        qr_img = qrcode.make(qr_data, box_size=block_size)
-        if save_path:
-            qr_img.save(save_path)
-        else:
-            return qr_img
+class PassGenerator:
+    """Class that stores the layout variables for pass generation"""
 
-    def generate_pass(self, values: List[str], keyword: str='', \
-            qr_size: int=10, txt_size: int=10, txt_width: int=10, \
-            save_path: str=''):
-        """Generate a pass image that can be validated with the associated
-        phone app"""
-        
-        qr_img = self.generate_qr(values, keyword, qr_size)
-        txt_img = Image.fromarray(blockletter.convert_phrase(
-            self.make_display_str(values), txt_width, txt_size), 'P')
-        height = max((qr_img.size[1], txt_img.size[1] + 4*qr_size)) + qr_size*4
-        width = qr_img.size[0] + txt_img.size[0] + qr_size*4
-        background = Image.new('1', (width, height), color=0x000000)
-        pass_img = Image.new('1', (width-2*qr_size, height-2*qr_size), color=0xFFFFFF)
-        pass_img.paste(qr_img, (qr_size, qr_size))
-        pass_img.paste(txt_img, (qr_size + qr_img.size[0], qr_size + 4*qr_size))
-        background.paste(pass_img, (qr_size, qr_size))
-        if save_path:
-            background.save(save_path)
-        else:
-            return background
+    def __init__(self, width: int=1000, height: int=400, qr_block: int=10,
+                 txt_block: int=10, logo_block: int=5, border_block: int=5,
+                 qr_pad: int=4):
+
+        # Input parameters
+        self.width = width
+        self.height = height
+        self.qr_block = qr_block
+        self.txt_block = txt_block
+        self.logo_block = logo_block
+        self.border_block = border_block
+        self.qr_pad = qr_pad
+
+        # Calculated parameters
+        width_pad = 5*self.border_block
+        self.inner_width = self.width - width_pad
+        height_pad = 6*self.border_block
+        self.inner_height = self.height - height_pad
+
+    def generate(self, message: str, code: str):
+
+        # Generate the logo for the top of the QR code
+        logo_img = Image.fromarray(
+            blockletter.convert_phrase('ZAPID.TECH', 10, self.logo_block), 'P'
+        )
+        logo_width, logo_height = logo_img.size
+
+        # Generate the QR Code and make sure that it fits in the inner box
+        qr_img = qrcode.make(code, box_size=self.qr_block, border=self.qr_pad)
+        qr_width, qr_height = qr_img.size
+        if (logo_height + qr_height) > self.inner_height:
+            raise Exception('QR Code height does not fit within pass '
+                            'boundaries')
+        code_logo_width = max(logo_width, qr_width)
+        if (code_logo_width + self.txt_block*6) > self.inner_width:
+            raise Exception('QR Code width does not fit within pass '
+                            'boundaries')
+
+        # Calculate the number of allowable text characters
+        txt_width = self.inner_width - code_logo_width - self.txt_block*6
+        txt_char_width = txt_width // self.txt_block // 6
+        txt_img = Image.fromarray(
+            blockletter.convert_phrase(message, txt_char_width), 'P')
+        message_width, message_height = txt_img.size
+        if self.inner_height < message_height:
+            raise Exception('Block letters height does not fit within pass '
+                            'boundaries')
+        if txt_width < message_width:
+            raise Exception('Block letters width does not fit within pass '
+                            'boundaries')
+        inner_img = Image.new(
+            '1', (self.inner_width, self.inner_height), color=0xFFFFFF
+        )
+        inner_img.paste(logo_img, (0, 0))
+        inner_img.paste(qr_img, (0, logo_height))
+        inner_img.paste(txt_img, (code_logo_width+self.txt_block*6, 0))
+
+        # Put together the whole pass image
+        pass_img = Image.new(
+            '1', (self.width, self.height), color=0xFFFFFF
+        )
+        border_img = Image.new(
+            '1', (self.width - 2*self.border_block,
+                  self.height - 2*self.border_block),
+            color=0xFFFFFF
+        )
+        pass_img.paste(border_img, (self.border_block, self.border_block))
+        pass_img.paste(inner_img, (2*self.border_block, 2*self.border_block))
+
+        return pass_img
