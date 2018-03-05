@@ -7,10 +7,11 @@ from collections import OrderedDict
 
 
 class _Section(Enum):
-    GLOBAL = 0
-    HEADER = 1
-    INDIVIDUAL = 2
-    END = 3
+    START = 0
+    GLOBAL = 1
+    HEADER = 2
+    INDIVIDUAL = 3
+    END = 4
 
 
 class BatchReader:
@@ -23,7 +24,7 @@ class BatchReader:
         self.local_values = []
         self.length = 0
         for line in file:
-            split_line = line.split('\t')
+            split_line = line.strip().split('\t')
             # section switch
             if split_line[0] == 'GLOBAL':
                 section = _Section.GLOBAL
@@ -58,7 +59,7 @@ class BatchReader:
             else:
                 message.append('{}: {}'.format(field, value))
 
-        for idx, val in enumerate(self.local_fields[index]):
+        for idx, val in enumerate(self.local_values[index]):
             field = self.local_fields[idx]
             if field[0] == '_':
                 if field[1] == '_':

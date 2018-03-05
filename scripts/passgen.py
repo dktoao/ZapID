@@ -14,8 +14,8 @@ import blockletter
 class PassGenerator:
     """Class that stores the layout variables for pass generation"""
 
-    def __init__(self, width: int=1000, height: int=600, qr_block: int=10,
-                 txt_block: int=10, logo_block: int=5, border_block: int=5,
+    def __init__(self, width: int=200, height: int=100, qr_block: int=2,
+                 txt_block: int=2, logo_block: int=1, border_block: int=1,
                  qr_pad: int=4):
 
         # Input parameters
@@ -56,7 +56,10 @@ class PassGenerator:
         txt_width = self.inner_width - code_logo_width - self.txt_block*6
         txt_char_width = txt_width // self.txt_block // 6
         txt_img = Image.fromarray(
-            blockletter.convert_phrase(message, txt_char_width), 'P')
+            blockletter.convert_phrase(
+                message, txt_char_width, self.txt_block
+            ), 'P'
+        )
         message_width, message_height = txt_img.size
         if self.inner_height < message_height:
             raise Exception('Block letters height does not fit within pass '

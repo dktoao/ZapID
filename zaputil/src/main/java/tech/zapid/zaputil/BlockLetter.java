@@ -51,9 +51,9 @@ public class BlockLetter {
         charMap.put('X', 0x01151151);
         charMap.put('Y', 0x00421151);
         charMap.put('Z', 0x01f1111f);
-        charMap.put(',', 0x00108000);
-        charMap.put('.', 0x00100000);
-        charMap.put('!', 0x00100421);
+        charMap.put(',', 0x00420000);
+        charMap.put('.', 0x00400000);
+        charMap.put('!', 0x00401082);
         charMap.put('#', 0x00afabea);
         charMap.put('$', 0x00fa38be);
         charMap.put('(', 0x01042110);
@@ -62,7 +62,7 @@ public class BlockLetter {
         charMap.put('-', 0x00003800);
         charMap.put('=', 0x000701c0);
         charMap.put('?', 0x0040322e);
-        charMap.put(':', 0x00008020);
+        charMap.put(':', 0x00020080);
         charMap.put(';', 0x00108020);
         charMap.put('/', 0x00111110);
         charMap.put('\\', 0x01041041);
