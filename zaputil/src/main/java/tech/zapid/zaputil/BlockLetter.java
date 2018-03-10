@@ -67,6 +67,8 @@ public class BlockLetter {
         charMap.put('/', 0x00111110);
         charMap.put('\\', 0x01041041);
         charMap.put('&', 0x0164C8A2);
+        charMap.put('"', 0x0000014A);
+        charMap.put('\'', 0x00000084);
         charMap.put(' ', 0x00000000);
         charMap.put('\n', 0x01ffffff);
     }
