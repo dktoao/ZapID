@@ -37,7 +37,7 @@ class PassGenerator:
 
         # Generate the logo for the top of the QR code
         logo_img = Image.fromarray(
-            blockletter.convert_phrase('ZAPID.TECH', 10, self.logo_block), 'P'
+            blockletter.convert_phrase('WWW.ZAPID.TECH', 14, self.logo_block), 'P'
         )
         logo_width, logo_height = logo_img.size
 
@@ -71,8 +71,8 @@ class PassGenerator:
             '1', (self.inner_width, self.inner_height), color=0xFFFFFF
         )
         inner_img.paste(logo_img, (0, 0))
-        inner_img.paste(qr_img, (0, logo_height))
-        inner_img.paste(txt_img, (code_logo_width+self.txt_block*6, 0))
+        self.paste_center(inner_img, qr_img, 0)
+        self.paste_center(inner_img, txt_img, code_logo_width+self.txt_block*6)
 
         # Put together the whole pass image
         pass_img = Image.new(
@@ -95,3 +95,10 @@ class PassGenerator:
         pass_img.paste(inner_img, (3*self.border_block, 3*self.border_block))
 
         return pass_img
+
+    @staticmethod
+    def paste_center(background, foreground, xloc):
+        bg_height = background.size[1]
+        fg_height = foreground.size[1]
+        yloc = (bg_height - fg_height) // 2
+        background.paste(foreground, (xloc, yloc))
