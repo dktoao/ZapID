@@ -2,6 +2,9 @@ apply plugin: 'java-library'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    //Test Libraries
+    testImplementation 'junit:junit:4.12'
 }
 
 sourceCompatibility = "1.8"
