@@ -1,3 +1,4 @@
+# Java IDE and Build Files
 *.iml
 .gradle
 .idea
@@ -9,3 +10,12 @@
 /captures
 .externalNativeBuild
 __pycache__
+
+# C++ IDE and Build Files
+/core/.vscode
+/core/lib
+!/core/lib/.gitkeep
+/core/build
+!/core/build/.gitkeep
+/core/bin
+!/core/bin/.gitkeep
