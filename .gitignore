@@ -13,9 +13,9 @@ __pycache__
 
 # C++ IDE and Build Files
 /core/.vscode
-/core/lib
+/core/lib/*
 !/core/lib/.gitkeep
-/core/build
+/core/build/*
 !/core/build/.gitkeep
-/core/bin
+/core/bin/*
 !/core/bin/.gitkeep
