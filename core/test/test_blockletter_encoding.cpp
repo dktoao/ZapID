@@ -1,15 +1,16 @@
 /**
- * @brief Test suite for ZapID Core
- * 
- * @file test.cpp
+ * test_blockletter_encoding.cpp
  * 
  * Copyright [2018] ZapID
+ * 
+ * Test the blockletter encoding to make sure that the Encode6 and Decode6
+ * functions are the inverse of each other
  */
 
 #include <iostream>
 #include <string>
 
-#include "blockletter.hpp"
+#include "core/blockletter.hpp"
 
 int main() {
     // Announce test

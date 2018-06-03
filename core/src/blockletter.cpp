@@ -1,6 +1,9 @@
 /* ----------------------------------------------------------------------------
  * blockletter.cpp
  * Copyright [2018] ZapID
+ * 
+ * This class defines scheme used to encode and generate "block letters" from
+ * a 5x5 grid of pixels.
  * --------------------------------------------------------------------------*/
 
 /* ----------------------------------------------------------------------------
@@ -9,7 +12,7 @@
 #include <cmath>
 #include <exception>
 
-#include "blockletter.hpp"
+#include "core/blockletter.hpp"
 
 /* ----------------------------------------------------------------------------
  * Variables
