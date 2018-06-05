@@ -24,8 +24,8 @@ const char* test_strings[num_test_strings] = {
 // Public and private key database
 typedef struct {
     encoder::KeyType key_type;
-    char* private_key;
-    char* public_key;
+    const char* private_key;
+    const char* public_key;
 } KeyInfo;
 const int num_test_keys = 2;
 KeyInfo test_keys[num_test_keys] = {
@@ -37,10 +37,10 @@ KeyInfo test_keys[num_test_keys] = {
 encoder::Bytes dummy_code(100, 0x00);
 encoder::QueryKeyOutput qko;
 encoder::CreateInput create_input;
-encoder::ValidateInput verify_input;
+encoder::ValidateInput validate_input;
 encoder::Bytes verification_code;
 
-void main() {
+int main() {
     // Loop through each encoder
     for (int ei=0; ei < encoder::kNumEncoders; ei++) {
         // Loop through each test string
@@ -71,8 +71,17 @@ void main() {
                     std::cout << verification_code[bi] << " ";
                 }
                 std::cout << std::endl;
-                //  TODO: Test other functions: Validate
+                // Test the Validate function with the code created with Create
+                validate_input.code = verification_code;
+                validate_input.public_key =
+                    encoder::CStringToBytes(test_keys[ki].public_key);
+                if (!encoder::Validate(ei, validate_input)) {
+                    std::cout << "Verification Failed!" << std::endl;
+                    return 1;
+                }
             }
         }
     }
+    std::cout << "All tests passed!" << std::endl;
+    return 0;
 }

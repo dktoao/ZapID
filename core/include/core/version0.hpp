@@ -10,8 +10,6 @@
 #ifndef ZAPID_CORE_VERSION0_HPP_
 #define ZAPID_CORE_VERSION0_HPP_
 
-#include <openssl/sha.h>
-
 #include "baseencoder.hpp"
 #include "blockletter.hpp"
 
@@ -20,7 +18,7 @@ namespace encoder {
 class Encoder0 : public BaseEncoder {
  private:
     const int kPasswordDigestLength = 6;
-    const int kMessageDigestLength = SHA256_DIGEST_LENGTH;
+    const int kMessageDigestLength = 32;  //  SHA256_DIGEST_LENGTH;
  public:
     QueryKeyOutput QueryKey(Bytes code);
     Bytes Create(CreateInput);

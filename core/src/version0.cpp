@@ -7,6 +7,8 @@
  * determine validity.
  * --------------------------------------------------------------------------*/
 
+#include <openssl/sha.h>
+
 #include "core/version0.hpp"
 
 namespace encoder {

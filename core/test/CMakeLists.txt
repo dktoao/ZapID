@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 set(TEST_FILES
     test_blockletter_encoding.cpp
+    test_encoders.cpp
 )
 
 include(CTest)

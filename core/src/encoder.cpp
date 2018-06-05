@@ -4,6 +4,7 @@
  * Copyright [2018] ZapID
  */
 
+#include "core/encoder.hpp"
 #include "core/version0.hpp"
 
 namespace encoder {
