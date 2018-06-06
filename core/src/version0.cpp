@@ -29,8 +29,8 @@ Bytes Encoder0::Create(CreateInput input) {
         input.private_key.begin(),
         input.private_key.end());
     // Hash both message+password and the password
-    unsigned char password_digest[SHA256_DIGEST_LENGTH];
-    unsigned char message_digest[SHA256_DIGEST_LENGTH];
+    unsigned char password_digest[kPasswordDigestLength];
+    unsigned char message_digest[kPasswordDigestLength];
     Bytes encoded_message;
     SHA256(&input.private_key[0], input.private_key.size(), password_digest);
     SHA256(&concat_input[0], concat_input.size(), message_digest);
@@ -39,7 +39,7 @@ Bytes Encoder0::Create(CreateInput input) {
     Bytes output;
     output.reserve(
         kPasswordDigestLength +
-        kMessageDigestLength +
+        SHA256_DIGEST_LENGTH +
         encoded_message.size());
     output.insert(
         output.begin(),
@@ -48,7 +48,7 @@ Bytes Encoder0::Create(CreateInput input) {
     output.insert(
         output.end(),
         &message_digest[0],
-        &message_digest[kMessageDigestLength]);
+        &message_digest[SHA256_DIGEST_LENGTH]);
     output.insert(
         output.end(),
         encoded_message.begin(),
@@ -58,7 +58,7 @@ Bytes Encoder0::Create(CreateInput input) {
 
 bool Encoder0::Validate(ValidateInput input) {
     // First extract the message from the code
-    int offset_message = kPasswordDigestLength + kMessageDigestLength;
+    int offset_message = kPasswordDigestLength + SHA256_DIGEST_LENGTH;
     Bytes coded_message(
         &input.code[offset_message], &input.code[input.code.size()]);
     Chars message = blockletter::Decode6(coded_message);

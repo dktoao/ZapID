@@ -15,10 +15,13 @@
 
 namespace encoder {
 
+// Setting for how big the password digest is
+// WARNING: modifying this value will break backwards compatibility
+const int kPasswordDigestLength = 6;
+
 class Encoder0 : public BaseEncoder {
  private:
     const int kPasswordDigestLength = 6;
-    const int kMessageDigestLength = 32;  //  SHA256_DIGEST_LENGTH;
  public:
     QueryKeyOutput QueryKey(Bytes code);
     Bytes Create(CreateInput);

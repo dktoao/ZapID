@@ -59,7 +59,7 @@ class BaseEncoder {
      * This function is to be overriden to supply the key lookup system
      * with a hash of thee private key used to created the code.
      */
-    virtual QueryKeyOutput QueryKey(Bytes code);
+    virtual QueryKeyOutput QueryKey(Bytes code) = 0;
 
     /**
      * Create the data that will go in the QR code based on the given
@@ -67,12 +67,12 @@ class BaseEncoder {
      * 
      * @return Bytes 
      */
-    virtual Bytes Create(CreateInput);
+    virtual Bytes Create(CreateInput) = 0;
 
     /**
      * Validate the QR code based on the public key provided
      */
-    virtual bool Validate(ValidateInput);
+    virtual bool Validate(ValidateInput) = 0;
 };
 }  // namespace encoder
 
