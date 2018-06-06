@@ -16,13 +16,8 @@ set(OPENSSL_ROOT_DIR /usr/local/ssl)
 find_package(OpenSSL REQUIRED)
 
 # Configure cmake output locations
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
-
-# Include directories
-#include_directories(${PROJECT_SOURCE_DIR}/include)
-#include_directories(/opt/openssl-1.0.2o/include)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
 # Enable Testing
 enable_testing()

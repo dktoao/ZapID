@@ -12,6 +12,7 @@
 __pycache__
 
 # C++ IDE and Build Files
+*.code-workspace
 /core/.vscode
 /core/lib/*
 !/core/lib/.gitkeep
