@@ -32,6 +32,11 @@ KeyInfo test_keys[num_test_keys] = {
     {encoder::SHA256_PASSWORD, "TestPwd1", "TestPwd1"},
     {encoder::SHA256_PASSWORD, "LetMeIn!", "LetMeIn!"}
 };
+const int num_bad_keys = 2;
+KeyInfo bad_keys[num_bad_keys] = {
+    {encoder::SHA256_PASSWORD, "TestPwd1", "PwdOfTest2"},
+    {encoder::SHA256_PASSWORD, "ImATeapot", "ImAKettle"}
+};
 
 // Dummy code so that QueryKey can be called without an actual code.
 encoder::Bytes dummy_code(100, 0x00);
@@ -68,7 +73,8 @@ int main() {
                 verification_code = encoder::Create(ei, create_input);
                 // Print the verification code
                 for (int bi=0; bi < verification_code.size(); bi++) {
-                    std::cout << verification_code[bi] << " ";
+                    std::cout << std::hex <<
+                    static_cast<int>(verification_code[bi]) << " ";
                 }
                 std::cout << std::endl;
                 // Test the Validate function with the code created with Create
@@ -77,6 +83,39 @@ int main() {
                     encoder::CStringToBytes(test_keys[ki].public_key);
                 if (!encoder::Validate(ei, validate_input)) {
                     std::cout << "Verification Failed!" << std::endl;
+                    return 1;
+                }
+            }
+            // Loop through each bad test key
+            for (int ki=0; ki < num_test_keys; ki++) {
+                // Print out test info
+                std::cout << "With bad key pair " << ki << std::endl;
+                // Call QueryKeyOutput with the dummy code to get the key type
+                // required by the encoder
+                qko = encoder::QueryKey(ei, dummy_code);
+                if (qko.type != bad_keys[ki].key_type) {
+                    std::cout << "Key type does not match, skipping test"
+                        << std::endl;
+                    continue;
+                }
+                // Create a code using Create
+                create_input.message =
+                    encoder::CStringToChars(test_strings[si]);
+                create_input.private_key =
+                    encoder::CStringToBytes(bad_keys[ki].private_key);
+                verification_code = encoder::Create(ei, create_input);
+                // Print the verification code
+                for (int bi=0; bi < verification_code.size(); bi++) {
+                    std::cout << std::hex <<
+                    static_cast<int>(verification_code[bi]) << " ";
+                }
+                std::cout << std::endl;
+                // Test the Validate function with the code created with Create
+                validate_input.code = verification_code;
+                validate_input.public_key =
+                    encoder::CStringToBytes(bad_keys[ki].public_key);
+                if (encoder::Validate(ei, validate_input)) {
+                    std::cout << "Wrong key passed verification!" << std::endl;
                     return 1;
                 }
             }
