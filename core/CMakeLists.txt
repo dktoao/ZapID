@@ -4,10 +4,15 @@ project(zapidcore)
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
 
+# Set the compiler flags
+set(CMAKE_CXX_COMPILER /usr/bin/c++)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall")
+
 # Add a configuration header file
 configure_file (
-    include/core/config.h.in
-    include/core/config.h
+    include/core/config.hpp.in
+    include/core/config.hpp
 )
 
 # First, add external libs (openssl crypto)

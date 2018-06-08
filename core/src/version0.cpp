@@ -1,10 +1,7 @@
 /* ----------------------------------------------------------------------------
  * version0.cpp
- * Copyright [2018] ZapID
  * 
- * Version 0 of the ZapID encoder system. This very simple version takes only
- * A message, password and a SHA-256 hash of that message and password to 
- * determine validity.
+ * Copyright [2018] ZapID
  * --------------------------------------------------------------------------*/
 
 #include <openssl/sha.h>

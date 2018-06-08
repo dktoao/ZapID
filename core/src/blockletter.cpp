@@ -8,7 +8,7 @@
 
 /* ----------------------------------------------------------------------------
  * Includes
-/* --------------------------------------------------------------------------*/
+ * --------------------------------------------------------------------------*/
 #include <cmath>
 #include <exception>
 
@@ -16,7 +16,7 @@
 
 /* ----------------------------------------------------------------------------
  * Variables
-/* --------------------------------------------------------------------------*/
+ * --------------------------------------------------------------------------*/
 typedef struct {
     char symbol;
     uint32_t bit_grid;
@@ -86,7 +86,7 @@ const BlockInfo letter_map[kLettermapLength] = {
 
 /* ----------------------------------------------------------------------------
  * Exceptions
-/* --------------------------------------------------------------------------*/
+ * --------------------------------------------------------------------------*/
 class InvalidCharacterException : public std::exception {
  public:
     const char * what(void) { return "Invalid Blockletter Character"; }
@@ -94,8 +94,8 @@ class InvalidCharacterException : public std::exception {
 
 /* ----------------------------------------------------------------------------
  * Private Functions
-/* --------------------------------------------------------------------------*/
-uint8_t FindSymbolIndex(char symbol) {
+ * --------------------------------------------------------------------------*/
+uint8_t FindSymbolIndex(const char symbol) {
     int ii = 0;
     int found_index = -1;
     while (ii < kLettermapLength) {
@@ -111,19 +111,25 @@ uint8_t FindSymbolIndex(char symbol) {
     return static_cast<uint8_t>(found_index);
 }
 
-char GetCharAtIndex(uint8_t index) {
+char GetCharAtIndex(const uint8_t index) {
     return letter_map[index].symbol;
+}
+
+uint32_t GetBitGrid(const char symbol) {
+    uint8_t index = FindSymbolIndex(symbol);
+    return letter_map[index].bit_grid;
 }
 
 namespace blockletter {
 /* ----------------------------------------------------------------------------
  * Public Functions
  * --------------------------------------------------------------------------*/
-std::vector<uint8_t> Encode6(const std::vector<char> input) {
+Bytes Encode6(const Chars input) {
     // setup vectors
     float fractional_bytes = static_cast<float>(input.size()) * (6.0 / 8.0);
     int num_bytes = static_cast<int>(std::ceil(fractional_bytes));
-    std::vector<uint8_t> output(num_bytes);
+    Chars uinput = UpperChars(input);
+    Bytes output(num_bytes);
 
     // loop through each triple of bytes and pack them with the chars
     uint8_t pack1;
@@ -132,10 +138,10 @@ std::vector<uint8_t> Encode6(const std::vector<char> input) {
     for (int idx_triple=0; idx_triple < num_bytes; idx_triple+=3) {
         // Pack the first of the triple
         // 0011 1111
-        pack1 = (FindSymbolIndex(input.at(idx_input)) & 0x3F);
+        pack1 = (FindSymbolIndex(uinput[idx_input]) & 0x3F);
         if (idx_input+1 < input.size()) {
             // 0011 0000
-            pack2 = (FindSymbolIndex(input.at(idx_input+1)) & 0x30);
+            pack2 = (FindSymbolIndex(uinput[idx_input+1]) & 0x30);
             output[idx_triple] = ((pack1 << 2) | (pack2 >> 4));
         } else {
             pack2 = 0x00;
@@ -144,10 +150,10 @@ std::vector<uint8_t> Encode6(const std::vector<char> input) {
         }
         // Pack the second of the triple
         // 0000 1111
-        pack1 = (FindSymbolIndex(input.at(idx_input+1)) & 0x0F);
+        pack1 = (FindSymbolIndex(uinput[idx_input+1]) & 0x0F);
         if (idx_input+2 < input.size()) {
             // 0011 1100
-            pack2 = (FindSymbolIndex(input.at(idx_input+2)) & 0x3C);
+            pack2 = (FindSymbolIndex(uinput[idx_input+2]) & 0x3C);
             output[idx_triple+1] = ((pack1 << 4) | (pack2 >> 2));
         } else {
             pack2 = 0x00;
@@ -156,10 +162,10 @@ std::vector<uint8_t> Encode6(const std::vector<char> input) {
         }
         // Pack the last triple
         // 0000 0011
-        pack1 = (FindSymbolIndex(input.at(idx_input+2)) & 0x03);
+        pack1 = (FindSymbolIndex(uinput[idx_input+2]) & 0x03);
         if (idx_input+3 < input.size()) {
             // 0011 1111
-            pack2 = (FindSymbolIndex(input.at(idx_input+3)) & 0x3F);
+            pack2 = (FindSymbolIndex(uinput[idx_input+3]) & 0x3F);
             output[idx_triple+2] = ((pack1 << 6) | pack2);
         } else {
             pack2 = 0x00;
@@ -172,14 +178,13 @@ std::vector<uint8_t> Encode6(const std::vector<char> input) {
     return output;
 }
 
-std::vector<char> Decode6(const std::vector<uint8_t> input) {
+Chars Decode6(const Bytes input) {
     // Calculate the size of the message
     float fractional_chars = input.size() * (8.0 / 6.0);
     int num_chars = static_cast<int>(std::floor(fractional_chars));
-    std::vector<char> output(num_chars);
+    Chars output(num_chars);
 
     // loop through every 4 letters in the input and get their values
-    int index_input = 0;
     uint8_t pack1;
     uint8_t pack2;
     int idx_input = 0;
@@ -215,6 +220,129 @@ std::vector<char> Decode6(const std::vector<uint8_t> input) {
     // if the length of the array % 4 = 3
     if (output[output.size()-1] == '\0') {
         output.pop_back();
+    }
+    return output;
+}
+
+MessageMatrix GetMessageMatrix(const Chars message, int max_width,
+        int outer_padding) {
+    // Make the message uppercase
+    Chars umessage = UpperChars(message);
+    // Calculate the character width of the message based on the max_width and
+    // padding inputs
+    int max_padded_width = max_width - 2*outer_padding;
+    int max_char_width = (max_padded_width + kLetterPadding)
+                         / (kSideLength + kLetterPadding);
+    // Break the message up based on the max width, space breaks and newline
+    // characters
+    std::vector<Chars> linebreak_message;
+    int lines = 0;
+    int col = 0;
+    int last_break = 0;
+    int next_break = 0;
+    for (int mi=0; mi < umessage.size(); mi++) {
+        // Update the next place to break if there is a space or newline
+        if (umessage[mi] == ' ' || umessage[mi] == '\n') {
+            next_break = mi + 1;
+        }
+        // Break the line on these conditions
+        if (col >= max_char_width || umessage[mi] == '\n') {
+            // Check for condition where there is no oportuntity for a break
+            // we have to break in the middle of a word.
+            if (next_break == last_break) {
+                next_break = last_break + max_char_width;
+            }
+            Chars sub_chars(&umessage[last_break], &umessage[next_break]);
+            RightTrimChars(&sub_chars);
+            linebreak_message.push_back(sub_chars);
+            last_break = next_break;
+            col = mi - last_break + 1;
+            lines++;
+        }
+        col++;
+    }
+    if (last_break < umessage.size()) {
+        Chars sub_chars(&umessage[last_break], &umessage[umessage.size()-1]);
+        RightTrimChars(&sub_chars);
+        linebreak_message.push_back(sub_chars);
+        lines++;
+    }
+    // Put together the output MessageMatrix output
+    MessageMatrix output;
+    output.ncols =
+        max_char_width * kSideLength
+        + (max_char_width-1) * kLetterPadding
+        + 2 * outer_padding;
+    output.nrows =
+        lines * kSideLength
+        + (lines-1) * kLinePadding
+        + 2 * outer_padding;
+    output.matrix = std::vector<bool>(output.ncols * output.nrows);
+    // Loop through each element and return it
+    int block_pixel_idx;
+    int block_pixel_col;
+    int block_pixel_row;
+    int letter_col;
+    int letter_row;
+    int letter_pixel_idx;
+    int letter_pixel_col;
+    int letter_pixel_row;
+    for (block_pixel_idx=0; block_pixel_idx < (output.ncols * output.nrows);
+            block_pixel_idx++) {
+        // First calculate the letter index and the index of the pixel in the
+        // letter
+        block_pixel_row = block_pixel_idx / output.ncols;
+        block_pixel_col = block_pixel_idx - block_pixel_row;
+
+        // Figure out the letter column and letter pixel column
+        letter_col = block_pixel_col - outer_padding;
+        if (letter_col < 0) {
+            // We are off in the left margin
+            continue;
+        }
+        letter_col = letter_col / (kSideLength + kLetterPadding);
+        if (letter_col >= max_char_width) {
+            // We are off in the right margin
+            continue;
+        }
+        letter_pixel_col = letter_col % (kSideLength + kLetterPadding);
+        if (letter_pixel_col >= kSideLength) {
+            // We are in the space between letters
+            continue;
+        }
+
+        // Figure out the letter row and letter pixel row
+        letter_row = block_pixel_row - outer_padding;
+        if (letter_row < 0) {
+            // We are off in the top margin
+            continue;
+        }
+        letter_row = block_pixel_row / (kSideLength + kLetterPadding);
+        if (letter_row >= lines) {
+            // We are off in the bottom margin
+            continue;
+        }
+        letter_pixel_row = block_pixel_row % (kSideLength + kLetterPadding);
+        if (letter_pixel_row >= kSideLength) {
+            // We are in the space between lines
+            continue;
+        }
+
+        // Calculate the letter pixel index
+        letter_pixel_idx = (letter_pixel_row * kSideLength) + letter_pixel_col;
+
+        // Get the letter we are inserting and then see if we need to fill in
+        // the pixel
+        if (letter_col >= linebreak_message[letter_row].size()) {
+            // We are past the last letter on the line
+            continue;
+        }
+        char insert_letter = linebreak_message[letter_row][letter_col];
+        uint32_t bit_grid = GetBitGrid(insert_letter);
+        uint32_t pixel_mask = (1 << letter_pixel_idx);
+        if (bit_grid & pixel_mask) {
+            output.matrix[block_pixel_idx] = true;
+        }
     }
     return output;
 }

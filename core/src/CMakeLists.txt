@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 set(SOURCE_FILES
     baseencoder.cpp
     blockletter.cpp
+    datatypes.cpp
     encoder.cpp
     version0.cpp
 )
