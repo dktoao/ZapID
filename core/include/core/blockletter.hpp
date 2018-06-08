@@ -29,7 +29,7 @@ namespace blockletter {
  * ---------------------------------------------------------------------------*/
 const int kSideLength = 5;
 const int kLetterPadding = 1;
-const int kLinePadding = 1;
+const int kLinePadding = 2;
 
 typedef struct {
     std::vector<bool> matrix;

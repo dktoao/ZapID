@@ -252,7 +252,7 @@ MessageMatrix GetMessageMatrix(const Chars message, int max_width,
             if (next_break == last_break) {
                 next_break = last_break + max_char_width;
             }
-            Chars sub_chars(&umessage[last_break], &umessage[next_break]);
+            Chars sub_chars(&umessage[last_break], &umessage[next_break+1]);
             RightTrimChars(&sub_chars);
             linebreak_message.push_back(sub_chars);
             last_break = next_break;
@@ -262,7 +262,7 @@ MessageMatrix GetMessageMatrix(const Chars message, int max_width,
         col++;
     }
     if (last_break < umessage.size()) {
-        Chars sub_chars(&umessage[last_break], &umessage[umessage.size()-1]);
+        Chars sub_chars(&umessage[last_break], &umessage[umessage.size()]);
         RightTrimChars(&sub_chars);
         linebreak_message.push_back(sub_chars);
         lines++;
@@ -292,7 +292,7 @@ MessageMatrix GetMessageMatrix(const Chars message, int max_width,
         // First calculate the letter index and the index of the pixel in the
         // letter
         block_pixel_row = block_pixel_idx / output.ncols;
-        block_pixel_col = block_pixel_idx - block_pixel_row;
+        block_pixel_col = block_pixel_idx - (block_pixel_row * output.ncols);
 
         // Figure out the letter column and letter pixel column
         letter_col = block_pixel_col - outer_padding;
@@ -300,14 +300,14 @@ MessageMatrix GetMessageMatrix(const Chars message, int max_width,
             // We are off in the left margin
             continue;
         }
-        letter_col = letter_col / (kSideLength + kLetterPadding);
-        if (letter_col >= max_char_width) {
-            // We are off in the right margin
-            continue;
-        }
         letter_pixel_col = letter_col % (kSideLength + kLetterPadding);
         if (letter_pixel_col >= kSideLength) {
             // We are in the space between letters
+            continue;
+        }
+        letter_col = letter_col / (kSideLength + kLetterPadding);
+        if (letter_col >= max_char_width) {
+            // We are off in the right margin
             continue;
         }
 
@@ -317,14 +317,14 @@ MessageMatrix GetMessageMatrix(const Chars message, int max_width,
             // We are off in the top margin
             continue;
         }
-        letter_row = block_pixel_row / (kSideLength + kLetterPadding);
-        if (letter_row >= lines) {
-            // We are off in the bottom margin
-            continue;
-        }
-        letter_pixel_row = block_pixel_row % (kSideLength + kLetterPadding);
+        letter_pixel_row = letter_row % (kSideLength + kLinePadding);
         if (letter_pixel_row >= kSideLength) {
             // We are in the space between lines
+            continue;
+        }
+        letter_row = block_pixel_row / (kSideLength + kLinePadding);
+        if (letter_row >= lines) {
+            // We are off in the bottom margin
             continue;
         }
 
