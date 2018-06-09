@@ -22,7 +22,7 @@ typedef struct {
     uint32_t bit_grid;
 } BlockInfo;
 
-const unsigned int kLettermapLength = 57;
+const int kLettermapLength = 57;
 
 const BlockInfo letter_map[kLettermapLength] = {
     {'\0', 0x00001000},  // 0  -> 0x00 -> 000000
@@ -85,14 +85,6 @@ const BlockInfo letter_map[kLettermapLength] = {
 };
 
 /* ----------------------------------------------------------------------------
- * Exceptions
- * --------------------------------------------------------------------------*/
-class InvalidCharacterException : public std::exception {
- public:
-    const char * what(void) { return "Invalid Blockletter Character"; }
-};
-
-/* ----------------------------------------------------------------------------
  * Private Functions
  * --------------------------------------------------------------------------*/
 uint8_t FindSymbolIndex(const char symbol) {
@@ -106,7 +98,7 @@ uint8_t FindSymbolIndex(const char symbol) {
         ii++;
     }
     if (found_index == -1) {
-        throw InvalidCharacterException();
+        throw "Invalid blockletter character";
     }
     return static_cast<uint8_t>(found_index);
 }
@@ -277,7 +269,7 @@ MessageMatrix GetMessageMatrix(const Chars message, int max_width,
         lines * kSideLength
         + (lines-1) * kLinePadding
         + 2 * outer_padding;
-    output.matrix = std::vector<bool>(output.ncols * output.nrows);
+    output.matrix = std::vector<uint8_t>(output.ncols * output.nrows);
     // Loop through each element and return it
     int block_pixel_idx;
     int block_pixel_col;
@@ -341,7 +333,7 @@ MessageMatrix GetMessageMatrix(const Chars message, int max_width,
         uint32_t bit_grid = GetBitGrid(insert_letter);
         uint32_t pixel_mask = (1 << letter_pixel_idx);
         if (bit_grid & pixel_mask) {
-            output.matrix[block_pixel_idx] = true;
+            output.matrix[block_pixel_idx] = 1;
         }
     }
     return output;

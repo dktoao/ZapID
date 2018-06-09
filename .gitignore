@@ -13,10 +13,12 @@ __pycache__
 
 # C++ IDE and Build Files
 *.code-workspace
-/core/.vscode
+.vscode
 /core/lib/*
 !/core/lib/.gitkeep
 /core/build/*
 !/core/build/.gitkeep
 /core/bin/*
 !/core/bin/.gitkeep
+/core/bind/nodejs/build/*
+!/core/bind/nodejs/build/.gitkeep

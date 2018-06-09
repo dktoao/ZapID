@@ -32,7 +32,7 @@ const int kLetterPadding = 1;
 const int kLinePadding = 2;
 
 typedef struct {
-    std::vector<bool> matrix;
+    std::vector<uint8_t> matrix;
     int nrows;
     int ncols;
 } MessageMatrix;
