@@ -22,8 +22,6 @@ using v8::Uint8Array;
 
 #include "core/blockletter.hpp"
 
-#define MEMBER(NAME) String::NewFromUtf8(isolate, "#NAME")
-
 /**
  * NodeJS binding to the blockletter::GetMessageMatrix function
  */
@@ -49,9 +47,10 @@ void GetMessageMatrix(const FunctionCallbackInfo<v8::Value>& args) {
         matrix->Set(ii, Integer::New(isolate, mat.matrix[ii]));
     }
     Local<Object> return_obj = Object::New(isolate);
-    return_obj->Set(MEMBER(nrows), nrows);
-    return_obj->Set(MEMBER(ncols), ncols);
-    return_obj->Set(MEMBER(matrix), matrix);
+    return_obj->Set(String::NewFromUtf8(isolate, "nrows"), nrows);
+    return_obj->Set(String::NewFromUtf8(isolate, "ncols"), ncols);
+    return_obj->Set(String::NewFromUtf8(isolate, "matrix"), matrix);
+    args.GetReturnValue().Set(return_obj);
 }
 
 // Functions required to export as a nodejs module
