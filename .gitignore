@@ -22,3 +22,4 @@ __pycache__
 !/core/bin/.gitkeep
 /core/bind/nodejs/build/*
 !/core/bind/nodejs/build/.gitkeep
+*/external/*
