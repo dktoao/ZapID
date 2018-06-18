@@ -40,10 +40,16 @@ function clearAll() {
     // Clear all elements from the table
     let table = document.getElementById("attribute-table");
     table.deleteTHead();
-    table.removeChild(table.getElementsByTagName("tbody")[0]);
+    let body = table.getElementsByTagName("tbody")[0];
+    if (body) {
+        table.removeChild(body);
+    }
     table = document.getElementById("id-table");
     table.deleteTHead();
-    table.removeChild(table.getElementsByTagName("tbody")[0]);
+    body = table.getElementsByTagName("tbody")[0];
+    if (body) {
+        table.removeChild(body);
+    }
 }
 
 function renderAll() {
