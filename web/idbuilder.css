@@ -1,0 +1,7 @@
+table, td, th {
+    border: 1px solid black; 
+}
+
+input[type=edit] {
+    width: 100%;
+}
