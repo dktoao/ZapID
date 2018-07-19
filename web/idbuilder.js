@@ -297,7 +297,8 @@ function updateAttributeData(elem, index) {
 }
 
 function startNew() {
-    active_table = Object.assign({}, starter_table);
+    active_table = JSON.parse(JSON.stringify(starter_table));
+    //active_table = Object.assign({}, starter_table);
     active_select = new Array(active_table.id_table.length).fill(false);
     focus_table = null;
     focus_col = null;
